@@ -2,11 +2,15 @@ import cv2
 import numpy as np
 import pickle
 import base64
+import os
 from flask import Flask, render_template, jsonify, request
 from flask_cors import CORS
 from tensorflow.keras.models import load_model
 from datetime import datetime
 
+# ====================================================
+# FLASK APP
+# ====================================================
 app = Flask(__name__)
 CORS(app)
 
@@ -31,10 +35,7 @@ current_gesture = {
     "timestamp": "--:--:--"
 }
 
-# 🔥 SESSION START TIME
 session_start_time = datetime.now()
-
-# 🔒 CONFIDENCE THRESHOLD (IMPORTANT)
 CONFIDENCE_THRESHOLD = 85
 
 # ====================================================
@@ -42,7 +43,7 @@ CONFIDENCE_THRESHOLD = 85
 # ====================================================
 @app.route("/")
 def home():
-    return render_template("index.html")
+    return "Gesture backend is running"
 
 @app.route("/live")
 def live():
@@ -193,7 +194,8 @@ def api_delete_gesture():
     return jsonify(success=False, message="Gesture action not found")
 
 # ====================================================
-# RUN (RENDER READY)
+# RUN (RENDER / GUNICORN READY)
 # ====================================================
 if __name__ == "__main__":
-    app.run(host="0.0.0.0", port=5000)
+    port = int(os.environ.get("PORT", 10000))
+    app.run(host="0.0.0.0", port=port)
